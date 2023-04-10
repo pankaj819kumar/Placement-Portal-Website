@@ -16,6 +16,7 @@ const Feed = () => {
   useEffect(() => {
     axios.get("/getAnnouncements").then((res) => {
       setAnouncements(res.data.data);
+      console.log(res.data);
     });
   }, [updateFeed]);
   return (

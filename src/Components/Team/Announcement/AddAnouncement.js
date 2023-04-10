@@ -63,6 +63,7 @@ const AddAnouncement = ({ setUpdateFeed }) => {
 
   const handleSendFeed = () => {
     setSending(true);
+    feed.content = content;
     axios
       .post("/newAnnouncement", feed)
       .then((res) => {
@@ -94,7 +95,7 @@ const AddAnouncement = ({ setUpdateFeed }) => {
             data-color-mode="light"
             style={{ minHeight: 300 }}
           />
-          <MDEditor.Markdown source={feed.content} style={{ whiteSpace: "pre-wrap" }} />
+          {/* <MDEditor.Markdown source={content} style={{ whiteSpace: "pre-wrap" }} /> */}
         </div>
         <TextField
           name="year"

@@ -6,8 +6,8 @@ import axios from "../../../axios";
 
 // MUI Components
 import { Stack, Typography, TextField, Button, IconButton } from "@mui/material";
-import { Dialog, Avatar, CircularProgress, Chip } from "@mui/material";
-import { InputAdornment, Tooltip } from "@mui/material";
+import { Dialog, Avatar, CircularProgress, Chip, Snackbar } from "@mui/material";
+import { InputAdornment, Tooltip, Alert } from "@mui/material";
 
 // MUI Icons
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -89,6 +89,8 @@ const CustomTextField = ({
   setIndex,
   list,
   setList,
+  getRecruiterPhoneNo,
+  getRecruiterEmails,
 }) => {
   // states
   const [updating, setUpdating] = useState(false);
@@ -115,6 +117,30 @@ const CustomTextField = ({
         setUpdating(false);
       });
   };
+
+  const handleDeleteRecruiterPhoneNo = () => {
+    axios
+      .delete("/deleteRecruiterPhoneNo",{data: {phoneNoId: id}})
+      .then((res) => {
+        console.log(res);
+        getRecruiterPhoneNo();
+      })
+      .catch((err) => {
+        console.log("error in delete phone:", err.response.data);
+      });
+  }
+
+  const handleDeleteRecruiterEmail = () => {
+    axios
+      .delete("/deleteRecruiterEmail",{data: {emailId: id}})
+      .then((res) => {
+        console.log(res);
+        getRecruiterEmails();
+      })
+      .catch((err) => {
+        console.log("error in delete email:", err.response.data);
+      });
+  }
 
   return (
     <Stack
@@ -235,17 +261,76 @@ const CustomTextField = ({
       >
         {index === currIndex ? "Update" : "Edit"}
       </Button>
+      <Button
+          size="small"
+          sx={{ textTransform: "none" }}
+        onClick={() => {
+          if (name === "email") {
+            handleDeleteRecruiterEmail();
+          } else
+            if (name === "phoneNo") {
+            handleDeleteRecruiterPhoneNo();
+            }
+          }}
+          // variant="outlined"
+        >
+          Delete
+        </Button>
     </Stack>
   );
 };
 
-const RecruiterEmails = ({ mails, setMails, emailIndex, setEmailIndex }) => {
+const RecruiterEmails = ({ mails, setMails, emailIndex, setEmailIndex, recruiterId, getRecruiterEmails, setOpenSnackbar, setError }) => {
+  const [email, setEmail] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const handleEmailChange = (e) => {
+    setError("");
+    setEmail(e.target.value);
+  }
+
+  const handleAddRecruiterEmail = () => {
+    setAdding(true);
+    axios
+      .post("/addRecruiterEmail", { recruiterId, email, countryCode: 91, remarks: "remark"})
+      .then((res) => {
+        setOpenSnackbar(true);
+        console.log(res);
+        setEmail("");
+        getRecruiterEmails();
+        setAdding(false);
+      })
+      .catch((err) => {
+        setAdding(false);
+        setError(err.response.data.error || err.response.data.errors[0].error);
+        setOpenSnackbar(true);
+        console.log(err.response.data);
+      });
+  }
   return (
     <Stack spacing={1}>
       <Typography variant="body1" sx={{ fontFamily: "Nunito" }} color="text.secondary">
         <strong>Emails</strong>
       </Typography>
-
+      <Stack spacing={1} direction="row" sx={{ width: "100%" }}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Email"
+          placeholder="Enter Email"
+          value={email}
+          onChange={handleEmailChange}
+        />
+        <Button
+          size="small"
+          sx={{ textTransform: "none" }}
+          onClick={handleAddRecruiterEmail}
+          variant="outlined"
+          disbaled={adding}
+        >
+          Add
+        </Button>
+      </Stack>
       {mails &&
         mails.map((mail, idx) => (
           <div key={mail._id}>
@@ -263,6 +348,7 @@ const RecruiterEmails = ({ mails, setMails, emailIndex, setEmailIndex }) => {
               setIndex={setEmailIndex}
               list={mails}
               setList={setMails}
+              getRecruiterEmails={getRecruiterEmails}
             />
           </div>
         ))}
@@ -270,12 +356,58 @@ const RecruiterEmails = ({ mails, setMails, emailIndex, setEmailIndex }) => {
   );
 };
 
-const RecruiterPhoneNos = ({ phoneNos, setPhoneNos, phoneNoIndex, setPhoneNoIndex }) => {
+const RecruiterPhoneNos = ({ phoneNos, setPhoneNos, phoneNoIndex, setPhoneNoIndex, recruiterId, getRecruiterPhoneNo, setOpenSnackbar, setError}) => {
+  const [phoneNo, setPhoneNo] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const handleContactNoChange = (e) => {
+    setError("");
+    setPhoneNo(e.target.value);
+  }
+
+  const handleAddRecruiterPhoneNo = () => {
+    setAdding(true);
+    axios
+      .post("/addRecruiterPhoneNo", { recruiterId, phoneNo, countryCode: 91, remarks: "remark"})
+      .then((res) => {
+        setOpenSnackbar(true);
+        console.log(res);
+        setPhoneNo("");
+        getRecruiterPhoneNo();
+        setAdding(false);
+      })
+      .catch((err) => {
+        setAdding(false);
+        setError(err.response.data.error || err.response.data.errors[0].error);
+        setOpenSnackbar(true);
+        console.log(err.response.data);
+      });
+  }
+
   return (
     <Stack spacing={1}>
       <Typography variant="body1" sx={{ fontFamily: "Nunito" }} color="text.secondary">
         <strong>Contact Number</strong>
       </Typography>
+      <Stack spacing={1} direction="row" sx={{ width: "100%" }}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Phone"
+          placeholder="Enter Contact Number"
+          value={phoneNo}
+          onChange={handleContactNoChange}
+        />
+        <Button
+          size="small"
+          sx={{ textTransform: "none" }}
+          onClick={handleAddRecruiterPhoneNo}
+          variant="outlined"
+          disbaled={adding}
+        >
+          Add
+        </Button>
+      </Stack>
       {phoneNos &&
         phoneNos.map((phoneNo, idx) => (
           <div key={phoneNo._id}>
@@ -291,6 +423,7 @@ const RecruiterPhoneNos = ({ phoneNos, setPhoneNos, phoneNoIndex, setPhoneNoInde
               setIndex={setPhoneNoIndex}
               list={phoneNos}
               setList={setPhoneNos}
+              getRecruiterPhoneNo={getRecruiterPhoneNo}
             />
           </div>
         ))}
@@ -305,6 +438,8 @@ const RecruiterDetails = ({ recruiter, open, setOpen }) => {
   const [phoneNos, setPhoneNos] = useState([]);
   const [emailIndex, setEmailIndex] = useState(-1);
   const [phoneNoIndex, setPhoneNoIndex] = useState(-1);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [error, setError] = useState("");
 
   // handle close
   const handleClose = () => {
@@ -347,6 +482,13 @@ const RecruiterDetails = ({ recruiter, open, setOpen }) => {
       });
   };
 
+  const handleCloseSnackbar = (e, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
   useEffect(() => {
     if (open) getRecruiterEmails();
   }, [open]);
@@ -374,16 +516,29 @@ const RecruiterDetails = ({ recruiter, open, setOpen }) => {
               setMails={setMails}
               emailIndex={emailIndex}
               setEmailIndex={setEmailIndex}
+              recruiterId={recruiter._id}
+              getRecruiterEmails={getRecruiterEmails}
+              setOpenSnackbar={setOpenSnackbar}
+              setError={setError}
             />
             <RecruiterPhoneNos
               phoneNos={phoneNos}
               setPhoneNos={setPhoneNos}
               phoneNoIndex={phoneNoIndex}
               setPhoneNoIndex={setPhoneNoIndex}
+              recruiterId={recruiter._id}
+              getRecruiterPhoneNo={getRecruiterPhoneNo}
+              setOpenSnackbar={setOpenSnackbar}
+              setError={setError}
             />
           </Stack>
         )}
       </Stack>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={error ? "error" : "success"} sx={{ width: "100%" }}>
+          {error ? error : " Added Successfully!"}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };

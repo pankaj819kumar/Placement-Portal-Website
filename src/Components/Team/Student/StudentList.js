@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 // react router
 import { useParams, useNavigate } from "react-router-dom";
@@ -15,9 +17,11 @@ import { DataGrid } from "@mui/x-data-grid";
 
 // MUI Icons
 import UpdateIcon from "@mui/icons-material/Replay";
+import DownloadIcon from "@mui/icons-material/Download";
 
 // assets
 import CopyableText from "../../assets/MicroComponents/copyText";
+import downloadAsExcel from "../../assets/Methods/downloadAsExcel";
 
 // Components
 import StudentFilters from "./StudentFilters";
@@ -315,6 +319,26 @@ const StudentList = () => {
     setFilters({ ...filters, page: newPage });
   };
 
+  // student fields to download in excel
+  const desiredFields = [
+    "name",
+    "enrollmentNo",
+    "gender",
+    "collegeEmail",
+    "personalEmail",
+    "phoneNo",
+    "altPhoneNo",
+    "courseName",
+    "departmentName",
+    "resumeLink",
+    "linkedin",
+    "maxCTCOffered",
+    "aadhar",
+    "PAN",
+    "aggregateCGPASemester",
+    "aggregateCGPA",
+  ];
+
   return (
     <Stack spacing={1} justifyContent="center" alignItems="center" sx={{ padding: "10px" }}>
       <StudentFilters filters={filters} setFilters={setFilters} />
@@ -351,6 +375,17 @@ const StudentList = () => {
           variant="outlined"
         />
       </Stack>
+      <Button
+        startIcon={<DownloadIcon />}
+        variant="outlined"
+        color="primary"
+        size="small"
+        sx={{ textTransform: "none" }}
+        onClick={() => downloadAsExcel(studentList, desiredFields)}
+        style={{ "margin-left": "40px" }}
+      >
+        Download
+      </Button>
     </Stack>
   );
 };
