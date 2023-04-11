@@ -21,7 +21,8 @@ const basicTemplate = `|         Hiring         |    On-Campus     |
 |      **Location**      |     _India_      |
 
 ---
-
+### Register here
+<a href="URL" target="_blank">Link</a>
 ### Dates
 
 Tentative OA Date : 
@@ -29,6 +30,12 @@ Tentative OA Date :
 Tentative Interview Date :
 
 ### Additional Details
+    Eligibility Criteria
+    - CGPA should be greater than 7
+    - Should not accepted any placement offer
+    - Students who already rejected on summer internship 
+      offer will not be eligible to take part in upcoming 
+      placement session
 `;
 
 const AddAnouncement = ({ setUpdateFeed }) => {
@@ -95,7 +102,7 @@ const AddAnouncement = ({ setUpdateFeed }) => {
             data-color-mode="light"
             style={{ minHeight: 300 }}
           />
-          {/* <MDEditor.Markdown source={content} style={{ whiteSpace: "pre-wrap" }} /> */}
+          <MDEditor.Markdown source={content} wrapperElement={{"data-color-mode": "light"}}/>
         </div>
         <TextField
           name="year"

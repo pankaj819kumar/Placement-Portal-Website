@@ -58,8 +58,8 @@ const StudentList = () => {
     entriesPerPage: 50,
     passingYear: currentYear() + 1,
     courseId: "",
-    aggregateCGPASemester: 2,
-    dreamLPA: 9,
+    // aggregateCGPASemester: 2,
+    // dreamLPA: 9,
   });
 
   const deleteEmptyParams = (filters) => {
