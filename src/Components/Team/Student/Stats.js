@@ -42,7 +42,7 @@ const Stats = () => {
                 Students Participating
               </Typography>
               <Typography variant="h5" component="h1" sx={style}>
-                {placementStats.participatingStudentsCount || "Loading..."}
+                {placementStats?.participatingStudentsCount || "Loading..."}
               </Typography>
             </CardContent>
           </Card>
@@ -54,7 +54,7 @@ const Stats = () => {
                 Students Placed
               </Typography>
               <Typography variant="h5" component="h1" sx={style}>
-                {placementStats.PlacedCount || "Loading..."}
+                {placementStats?.PlacedCount || "Loading..."}
               </Typography>
             </CardContent>
           </Card>
@@ -66,7 +66,7 @@ const Stats = () => {
                 Highest Package
               </Typography>
               <Typography variant="h5" component="h1" sx={style}>
-                {placementStats.highestPackage || "Loading.."}
+                {placementStats?.highestPackage || "Loading.."}
               </Typography>
             </CardContent>
           </Card>
@@ -78,7 +78,7 @@ const Stats = () => {
                 Lowest Package
               </Typography>
               <Typography variant="h5" component="h1" sx={style}>
-                {placementStats.lowestPackage || "Loading..."}
+                {placementStats?.lowestPackage || "Loading..."}
               </Typography>
             </CardContent>
           </Card>
@@ -90,7 +90,7 @@ const Stats = () => {
                 Average Package
               </Typography>
               <Typography variant="h5" component="h1" sx={style}>
-                {placementStats.averagePackage || "Loading..."}
+                {placementStats?.averagePackage || "Loading..."}
               </Typography>
             </CardContent>
           </Card>
@@ -102,7 +102,7 @@ const Stats = () => {
                 Median Package
               </Typography>
               <Typography variant="h5" component="h1" sx={style}>
-                {placementStats.medianPackage || "Loading..."}
+                {placementStats?.medianPackage || "Loading..."}
               </Typography>
             </CardContent>
           </Card>
@@ -114,7 +114,7 @@ const Stats = () => {
                 Students Placed
               </Typography>
               {chartData?.salaryRanges && (
-                <BarChart placementData={chartData.salaryRanges}/>
+                <BarChart placementData={chartData?.salaryRanges}/>
               )}
             </CardContent>
           </Card>
