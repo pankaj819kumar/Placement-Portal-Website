@@ -48,7 +48,13 @@ const App = () => {
           </Route>
         </Route>
         {/* TPO Portal */}
-        <Route path="/tpo" element={<TPO />} />
+        <Route path="/tpo" exact element={<TPO />} >
+        <Route path="" element={<TPO />} />
+          <Route path=":panel" element={<TPO />} >
+          <Route path="" element={<TPO />} />
+              <Route path=":value" element={<TPO />} />
+        </Route>
+        </Route>
         <Route path="/contact">
           <Route path="" element={<Contact />} />
           <Route path=":panel" element={<Contact />} />

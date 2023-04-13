@@ -2,7 +2,7 @@
 import { Box, Paper, Stack, Typography, Divider } from "@mui/material";
 import { TextField } from "@mui/material";
 
-import MDEditor from "@uiw/react-md-editor";
+// MUI Icons
 
 const SingleAnnouncement = ({ announcement }) => {
   return (
@@ -18,8 +18,7 @@ const SingleAnnouncement = ({ announcement }) => {
             </Typography>
           </Stack>
           <Divider flexItem orientation="horizontal" />
-          {/* <TextField value={announcement.content} multiline minRows={5} /> */}
-          <MDEditor.Markdown source={announcement.content} wrapperElement={{"data-color-mode": "light"}}/>
+          <TextField value={announcement.content} multiline minRows={5} />
         </Stack>
       </Paper>
     </Box>

@@ -4,8 +4,6 @@ import { TextField } from "@mui/material";
 
 // MUI Icons
 
-import MarkdownPreview from '@uiw/react-markdown-preview';
-
 const Anouncement = ({ anouncement }) => {
   return (
     <Box sx={{ width: 600, minHeight: 400 }}>
@@ -20,11 +18,7 @@ const Anouncement = ({ anouncement }) => {
             </Typography>
           </Stack>
           <Divider flexItem orientation="horizontal" />
-          {/* <TextField value={anouncement.content} multiline minRows={5} /> */}
-          <MarkdownPreview
-            source={anouncement.content}
-            wrapperElement={{"data-color-mode": "light"}}
-          />
+          <TextField value={anouncement.content} multiline minRows={5} />
         </Stack>
       </Paper>
     </Box>

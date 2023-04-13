@@ -139,7 +139,7 @@ const NavMenu = () => {
           },
         }}
       >
-        {user && user?.roles.includes("STUDENT") && (
+        {user && user?.roles.includes("STUDENT")&&!(user?.roles.includes("TPO")) && (
           <Item Icon={<PersonIcon fontSize="small" />} text="Profile" url="/profile" />
         )}
         {user && user?.roles.includes("STUDENT") && (
