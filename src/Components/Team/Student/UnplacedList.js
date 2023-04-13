@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 // react router
@@ -45,7 +46,7 @@ const currentYear = () => {
 
 
 
-const PlacedList=()=>{
+const UnplacedList=()=>{
   
     const params = useParams();
     const navigate = useNavigate();
@@ -87,7 +88,7 @@ const PlacedList=()=>{
 
   useEffect(()=>{
   
-    axios.get('/getPlacedList')
+    axios.get('/getUnplacedList')
     .then(response => {console.log(response.data)
       var trows = response.data.map((student) => {
         return {
@@ -99,12 +100,13 @@ const PlacedList=()=>{
               photo: student.photo,
             },
           ],
-          company: student.company,
+          
           enrollment: student.enrollmentNo,
           email: [{ collegeEmail: student.collegeEmail, personalEmail: student.personalEmail }],
           department: student.departmentName,
           contact: [{ phoneNo: student.phoneNo, altPhoneNo: student.altPhoneNo }],
           // teamstatus:[{designation:student.designation,userId:student._id}]
+          resume: student.resumeLink,
           maxCTCOffered: student.maxCTCOffered,};
       });
       console.log(trows)
@@ -123,7 +125,7 @@ const [rows,setRows]=useState({});
     {
       field: "student",
       headerName: "Student",
-      width: 300,
+      width: 250,
       sortable: false,
       renderCell: (val) => {
         const res = val.value[0];
@@ -170,7 +172,7 @@ const [rows,setRows]=useState({});
     {
       field: "contact",
       headerName: "Contact",
-      width: 250,
+      width: 200,
       sortable: false,
       renderCell: (val) => {
         const res = val.value[0];
@@ -188,25 +190,31 @@ const [rows,setRows]=useState({});
         );
       },
     },
+
+
     {
-      field: "company",
-      headerName: "Company Name",
-      sortable: false,
-      width: 200,
-      renderCell: (val) => {
-        const res = val.value;
-        return <ColTxt txt={res} fontSize="20px" sx={{ textAlign: "center" }} />;
+        field: "resume",
+        headerName: "Resume",
+        sortable: false,
+        width: 100,
+        renderCell: (val) => {
+          const res = val.value;
+          return (
+            <Stack sx={{ whiteSpace: "normal", width: "100%" }} spacing={1}>
+              <Button
+                onClick={() => {
+                  window.open(res, "_blank").focus();
+                }}
+                size="small"
+                sx={{ textTransform: "none" }}
+                variant="outlined"
+              >
+                Resume
+              </Button>
+            </Stack>
+          );
+        },
       },
-    },
-    
-    {
-      field: "maxCTCOffered",
-      headerName: "CTCOffered",
-      width: 200,
-      renderCell: (params) => {
-      return ( <CopyableText text={`${params.value} LPA`} fontSize="10px" sx={{ width: "100" }}/>)
-    },
-    },
     
   ];
 
@@ -255,4 +263,4 @@ console.log(params)
     </Stack>
   );
 }
-export default PlacedList
+export default UnplacedList
