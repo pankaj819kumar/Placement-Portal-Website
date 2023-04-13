@@ -9,7 +9,7 @@ import axios from "../../axios";
 // MUI Components
 import { Box, Stack, Typography, Avatar, Button } from "@mui/material";
 import { Pagination, IconButton, CircularProgress } from "@mui/material";
-import { Select, MenuItem } from '@material-ui/core';
+import { Select, MenuItem } from '@mui/material';
 // MUI-X Components
 import { DataGrid } from "@mui/x-data-grid";
 
