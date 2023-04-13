@@ -2,65 +2,61 @@
 import { useState, useEffect } from "react";
 
 // react router
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 // MUI Components
 import { Stack } from "@mui/material";
-import { List, ListItem, ListItemButton } from "@mui/material";
-import { ListItemIcon, ListItemText, Divider } from "@mui/material";
+import {Typography } from "@mui/material";
 
 // MUI Icons
 import EditIcon from "@mui/icons-material/Edit";
 import ListIcon from "@mui/icons-material/ListAlt";
+import PlacementsIcon from '@mui/icons-material/DataSaverOff';
 
 const TpoNav = () => {
   // hooks initalization
-  const navigate = useNavigate();
   const params = useParams();
-  const [panel, setPanel] = useState(params.panel || "editTeam");
 
-  useEffect(() => {
-    if(params.value===null)
-    navigate(`/tpo/${panel}`);
-else
-navigate(`/tpo/${panel}/${params.value}`);
-  }, [panel]);
-
-  const handleClick = (newPanel) => {
-    setPanel(newPanel);
+  const Item = ({ url, Icon, text, active }) => {
+    return (
+      <Link to={url} className={active ? "profile-navLink active" : "profile-navLink"}>
+        <Stack direction="row" spacing={2} alignItems="center">
+          {Icon}
+          <Typography variant="body2" color="text.secondary" sx={{ fontFamily: "Nunito" }}>
+            {text}
+          </Typography>
+        </Stack>
+      </Link>
+    );
   };
   return (
-    <Stack sx={{ padding: "15px 24px", minWidth: 300 }}>
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton
-            name="editTeam"
-            onClick={() => handleClick("editTeam")}
-            selected={panel === "editTeam"}
-          >
-            <ListItemIcon>
-              <EditIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Edit Team"
-              sx={{ "& .MuiListItemText-primary": { fontFamily: "Nunito" } }}
-            />
-          </ListItemButton>
-        </ListItem>
-        <Divider />
-        <ListItem disablePadding>
-          <ListItemButton
-            name="viewTeam"
-            onClick={() => handleClick("viewTeam")}
-            selected={panel === "viewTeam"}
-          >
-            <ListItemIcon>
-              <ListIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="View Team" />
-          </ListItemButton>
-        </ListItem>
-      </List>
+    <Stack
+      sx={{
+        width: 300,
+        height: "100%",
+        padding: "15px 10px",
+      }}
+      spacing={2}
+      alignItems="center"
+    >
+      <Item
+        url="/tpo/edit"
+        Icon={<EditIcon size="small" color="primary" />}
+        text="Edit Team"
+        active={params.panel === "edit"}
+      />
+      <Item
+        url="/tpo/view"
+        Icon={<ListIcon size="small" color="primary" />}
+        text="View Team"
+        active={params.panel === "view"}
+      />
+      <Item
+        url="/team/student/stats"
+        Icon={<PlacementsIcon size="small" color="primary" />}
+        text="Placements"
+        active={params.panel === "placements"}
+      />
     </Stack>
   );
 };

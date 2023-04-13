@@ -1,8 +1,8 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../../Context/userContext";
 
 // react router
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // MUI Components
 import { Stack, Divider, Typography, Alert } from "@mui/material";
@@ -14,8 +14,13 @@ import ViewTeam from "./ViewTeam";
 
 const TpoDashboard = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [user] = useContext(UserContext);
   
+  useEffect(() => {
+    if (params.panel === undefined) navigate(`/tpo/edit`);
+  }, []);
+
   return <>{user ? (
     <Stack
       spacing={2}
@@ -37,7 +42,13 @@ const TpoDashboard = () => {
         sx={{ width: "100%", flexGrow: 1 }}
       >
         <TpoNav />
-        {params.panel === "viewTeam" ? <ViewTeam/> : <EditTeam />}
+        {params.panel === "edit" ? (
+          <EditTeam />
+        ) : params.panel === "view" ? (
+          <ViewTeam />
+        // ) : params.panel === "placements" ? (
+        //   <Student />
+        ) : null}
       </Stack>
     </Stack>
   ) : (
