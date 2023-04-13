@@ -96,6 +96,8 @@ const StudentDetails = () => {
     cgpaGrades: {},
     highSchoolGrades: {},
     intermediateGrades: {},
+    isPlaced: false,
+    maxCTCOffered: "",
   });
   const [department, setDepartment] = useState([]);
   const [course, setCourse] = useState([]);
@@ -231,6 +233,8 @@ const StudentDetails = () => {
         intermediateGrades: studentProfile.intermediateGrades || {},
         highSchoolGrades: studentProfile.highSchoolGrades || {},
         isParticipatingInPlacements: studentProfile.isParticipatingInPlacements || true,
+        isPlaced: studentProfile.isPlaced || false,
+        maxCTCOffered: studentProfile.maxCTCOffered || "",
       });
       setCGPAGrades({
         semester1: studentProfile?.cgpaGrades?.semester1 || 0,
@@ -550,6 +554,30 @@ const StudentDetails = () => {
           ]}
           helpTxt="Are you willing to participate in placements"
           editable={editable}
+        />
+        <StudentFormTextField
+          formData={formData}
+          setFormData={setFormData}
+          name="isPlaced"
+          value={formData.isPlaced}
+          label="Is Placed"
+          type="select"
+          selectItems={[
+            { label: "YES", value: true },
+            { label: "NO", value: false },
+          ]}
+          helpTxt="Are you placed"
+          editable={editable}
+        />
+        <StudentFormTextField
+          formData={formData}
+          setFormData={setFormData}
+          name="maxCTCOffered"
+          value={formData.maxCTCOffered}
+          label="Max CTC Offered"
+          editable={editable}
+          helpTxt="CTC in LPA | eg : 40"
+          type="number/text"
         />
       </Stack>
       <Button
