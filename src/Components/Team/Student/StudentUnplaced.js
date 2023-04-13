@@ -38,7 +38,7 @@ const currentYear = () => {
   return date.getFullYear();
 };
 
-const StudentList = () => {
+const StudentUnplaced = () => {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -389,4 +389,4 @@ const StudentList = () => {
     </Stack>
   );
 };
-export default StudentList;
+export default StudentUnplaced;

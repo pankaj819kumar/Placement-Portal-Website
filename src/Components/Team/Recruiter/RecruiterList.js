@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+// excel file download
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
+
 // react router
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -21,9 +25,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteForever";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import DownloadIcon from "@mui/icons-material/Download";
 
 // assets
 import CopyableText from "../../assets/MicroComponents/copyText";
+import downloadAsExcel from "../../assets/Methods/downloadAsExcel";
 
 // Components
 import DeleteRecruiter from "./DeleteRecruiter";
@@ -252,6 +258,8 @@ const RecruiterList = () => {
     setFilters({ ...filters, page: newPage });
   };
 
+  const desiredFields = ["firstName", "lastName","_id", "gender", "designation", "linkedIn", "remarks"];
+
   return (
     <Stack spacing={1} justifyContent="center" alignItems="center" sx={{ padding: "10px" }}>
       <Stack spacing={1} direction="row" sx={{ width: "100%" }}>
@@ -355,6 +363,17 @@ const RecruiterList = () => {
           variant="outlined"
         />
       </Stack>
+      <Button
+        startIcon={<DownloadIcon />}
+        variant="outlined"
+        color="primary"
+        size="small"
+        sx={{ textTransform: "none" }}
+        onClick={() => downloadAsExcel(recruiterList, desiredFields)}
+        style={{'margin-left': '40px'}}
+      >
+        Download
+      </Button>
       <DeleteRecruiter
         recruiter={recruiter}
         setOpen={setOpen}

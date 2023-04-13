@@ -1,127 +1,81 @@
 import { useState, useEffect } from "react";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 // react router
 import { useParams, useNavigate } from "react-router-dom";
 
 // api
-import axios from "../../axios";
+import axios from "../../../axios";
 
 // MUI Components
 import { Box, Stack, Typography, Avatar, Button } from "@mui/material";
 import { Pagination, IconButton, CircularProgress } from "@mui/material";
-import { Select, MenuItem } from '@material-ui/core';
+
 // MUI-X Components
 import { DataGrid } from "@mui/x-data-grid";
 
 // MUI Icons
 import UpdateIcon from "@mui/icons-material/Replay";
+import DownloadIcon from "@mui/icons-material/Download";
 
 // assets
-import CopyableText from "../assets/MicroComponents/copyText";
-import StudentSearch from "./StudentSearch";
-const generateViewURL = (url) => {
-    const prefix = "https://drive.google.com/file/d/";
-    const documentId = url.replace(prefix, "").split("/")[0];
-    return "https://drive.google.com/uc?export=view&id=" + documentId;
-  };
+import CopyableText from "../../assets/MicroComponents/copyText";
+import downloadAsExcel from "../../assets/Methods/downloadAsExcel";
+
 // Components
-const ColTxt = ({ txt }) => {
-  return (
-    <Typography
-      sx={{ fontSize: "11px", fontFamily: "Nunito", lineHeight: "none" }}
-      align="justify"
-    >
-      <strong>{txt}</strong>
-    </Typography>
-  );
+import StudentFilters from "./StudentFilters";
+
+// create viewable google drive link
+const generateViewURL = (url) => {
+  const prefix = "https://drive.google.com/file/d/";
+  const documentId = url.replace(prefix, "").split("/")[0];
+  return "https://drive.google.com/uc?export=view&id=" + documentId;
 };
+
 const currentYear = () => {
-   
-    const date = new Date();
-    return date.getFullYear();
-  };
-  const options = [
-    { value: 'STUDENT', label: 'STUDENT' },
-    { value: 'MTECH CO-ORDINATOR', label: 'MTECH CO-ORDINATOR' },
-    { value: 'BTECH CO-ORDINATOR', label:'BTECH CO-ORDINATOR'},
-    { value: 'OVERALL CO-ORDINATOR', label:'OVERALL CO-ORDINATOR'},
-  { value: ' PLACEMENT EXECUTIVE', label:'PLACEMENT EXECUTIVE'},
-  
-  ];
- 
-  const CustomCellRenderer = ({ value,userId, onEditCellChange }) => {
-    const [selectedOption, setSelectedOption] = useState(value);
-  
-    const handleChange = (event) => {
-      const newValue = event.target.value;
-      console.log(value,userId);
-      axios
-      .post("/updateTeamMember", { "userId": userId,"designation":event.target.value  })
-      .then((res) => {
-      console.log("Updated")
-      })
-      .catch((err) => {
-        console.log(err)
-      });
-      setSelectedOption(newValue);
-      onEditCellChange({ value: newValue });
-     
-    };
-  
-    return (
-      <Select value={selectedOption} onChange={handleChange}>
-        {options.map((option) => (
-          
-          <MenuItem key={option.value} value={option.value} >
-             <ColTxt  txt={option.label} />
-          </MenuItem>
-         
-        ))}
-      </Select>
-    );
+  const date = new Date();
+  return date.getFullYear();
+};
+
+const StudentPlaced = () => {
+  const params = useParams();
+  const navigate = useNavigate();
+
+  // states
+  const [search, setSearch] = useState(
+    params.value?.split("=")[0] === "search" ? params.value?.split("=")[1] : ""
+  );
+  const [Loading, setLoading] = useState(false);
+  const [studentList, setStudentList] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [recruiter, setRecruiter] = useState({});
+  const [opencontact, setOpenContact] = useState(false);
+  const [listChanged, setListChanged] = useState(false);
+  const [filters, setFilters] = useState({
+    page: 1,
+    entriesPerPage: 50,
+    passingYear: currentYear() + 1,
+    courseId: "",
+    // aggregateCGPASemester: 2,
+    // dreamLPA: 9,
+  });
+
+  const deleteEmptyParams = (filters) => {
+    if (filters?.departmentId === "") delete filters.departmentId;
+    if (filters?.minCGPA === 0) delete filters.minCGPA;
+    if (filters?.dreamLPA === 0) delete filters.dreamLPA;
+    if (filters?.gender === 0) delete filters.gender;
+    if (filters?.isParticipatingInPlacements === 0) delete filters.isParticipatingInPlacements;
+    return filters;
   };
 
-
-const StudentList=()=>{
-  
-    const params = useParams();
-    const navigate = useNavigate();
-    const [search, setSearch] = useState(params.value===null?"":params.value)
-    const [Loading, setLoading] = useState(false);
-    const [studentList, setStudentList] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);
-    const [open, setOpen] = useState(false);
-    const [recruiter, setRecruiter] = useState({});
-    const [opencontact, setOpenContact] = useState(false);
-    const [listChanged, setListChanged] = useState(false);
-   
-    const [filters, setFilters] = useState({
-      page: 1,
-      entriesPerPage: 50,
-      passingYear: currentYear() + 1,
-      courseId: "",
-      aggregateCGPASemester: 2,
-      dreamLPA: 9,
-      courseId:"636165923f57d2adcc75938d"
-    });
-    const deleteEmptyParams = (filters) => {
-     delete filters.departmentId;
-    delete filters.minCGPA;
-     delete filters.dreamLPA;
-       delete filters.gender;
-       delete filters.isParticipatingInPlacements;
-       delete filters.aggregateCGPASemester;
-       
-        return filters;
-      };
-
-//getStudents
-const getStudentList = (filters) => {
-  console.log(deleteEmptyParams(filters)); 
-  setLoading(true);
-    if (!(params.value=== null))
-      filters = { ...filters, searchQuery: params.value };
-  
+  const getStudentList = (filters) => {
+    setLoading(true);
+    if (params.value?.split("=")[0] === "search")
+      filters = { ...filters, searchQuery: params.value?.split("=")[1] };
+    console.log(deleteEmptyParams(filters));
     axios
       .get("/getstudentList", { params: deleteEmptyParams(filters) })
       .then((res) => {
@@ -133,13 +87,27 @@ const getStudentList = (filters) => {
       .catch((err) => {
         setLoading(false);
       });
-      console.log("yes",deleteEmptyParams(filters));
   };
-  useEffect(() => {
-    getStudentList(filters);
-  }, [params.value, listChanged]);
 
- 
+  useEffect(() => {
+    if (filters.courseId.length) getStudentList(filters);
+  }, [filters, listChanged]);
+
+  const handleDeleteCompany = (recruiter) => {
+    setRecruiter(recruiter);
+    setOpen(true);
+  };
+
+  const ColTxt = ({ txt }) => {
+    return (
+      <Typography
+        sx={{ fontSize: "11px", fontFamily: "Nunito", lineHeight: "none" }}
+        align="justify"
+      >
+        <strong>{txt}</strong>
+      </Typography>
+    );
+  };
 
   const columns = [
     {
@@ -274,67 +242,50 @@ const getStudentList = (filters) => {
         );
       },
     },
-
-
     {
-      field: "teamstatus",
-      headerName: "Manage Team Status",
-      width: 200,
-      editable: true,
-      renderCell: (params) => (
-        <CustomCellRenderer
-        userId={params.value[0].userId}
-          value={params.value[0].designation}
-          onEditCellChange={(newValue) =>
-            params.api.commitCellChange({ ...params, ...newValue })
-          }
-        />
-      ),
+      field: "resume",
+      headerName: "Resume",
+      sortable: false,
+      width: 100,
+      renderCell: (val) => {
+        const res = val.value;
+        return (
+          <Stack sx={{ whiteSpace: "normal", width: "100%" }} spacing={1}>
+            <Button
+              onClick={() => {
+                window.open(res, "_blank").focus();
+              }}
+              size="small"
+              sx={{ textTransform: "none" }}
+              variant="outlined"
+            >
+              Resume
+            </Button>
+          </Stack>
+        );
+      },
     },
-    // {
-    //   field: "resume",
-    //   headerName: "Resume",
-    //   sortable: false,
-    //   width: 100,
-    //   renderCell: (val) => {
-    //     const res = val.value;
-    //     return (
-    //       <Stack sx={{ whiteSpace: "normal", width: "100%" }} spacing={1}>
-    //         <Button
-    //           onClick={() => {
-    //             window.open(res, "_blank").focus();
-    //           }}
-    //           size="small"
-    //           sx={{ textTransform: "none" }}
-    //           variant="outlined"
-    //         >
-    //           Resume
-    //         </Button>
-    //       </Stack>
-    //     );
-    //   },
-    // },
-    // {
-    //   field: "update",
-    //   headerName: "Update",
-    //   sortable: false,
-    //   width: 120,
-    //   renderCell: (val) => {
-    //     const res = val.value;
-    //     return (
-    //       <Stack sx={{ whiteSpace: "normal", width: "100%" }} spacing={1}>
-    //         <Button
-    //           onClick={() => navigate(`/team/student/details/${res}`)}
-    //           size="small"
-    //           sx={{ textTransform: "none" }}
-    //           variant="outlined"
-    //         >
-    //           Update
-    //         </Button>
-    //       </Stack>
-    //     );
-    //   },
-    // },
+    {
+      field: "update",
+      headerName: "Update",
+      sortable: false,
+      width: 120,
+      renderCell: (val) => {
+        const res = val.value;
+        return (
+          <Stack sx={{ whiteSpace: "normal", width: "100%" }} spacing={1}>
+            <Button
+              onClick={() => navigate(`/team/student/details/${res}`)}
+              size="small"
+              sx={{ textTransform: "none" }}
+              variant="outlined"
+            >
+              Update
+            </Button>
+          </Stack>
+        );
+      },
+    },
   ];
 
   const rows = studentList.map((student) => {
@@ -359,26 +310,45 @@ const getStudentList = (filters) => {
         },
       ],
       contact: [{ phoneNo: student.phoneNo, altPhoneNo: student.altPhoneNo }],
-      teamstatus:[{designation:student.designation,userId:student._id}]
+      resume: student.resumeLink,
+      update: student._id,
     };
   });
 
   const handleChange = (e, newPage) => {
     setFilters({ ...filters, page: newPage });
   };
-  
-console.log(params)
+
+  // student fields to download in excel
+  const desiredFields = [
+    "name",
+    "enrollmentNo",
+    "gender",
+    "collegeEmail",
+    "personalEmail",
+    "phoneNo",
+    "altPhoneNo",
+    "courseName",
+    "departmentName",
+    "resumeLink",
+    "linkedin",
+    "maxCTCOffered",
+    "aadhar",
+    "PAN",
+    "aggregateCGPASemester",
+    "aggregateCGPA",
+  ];
+
   return (
     <Stack spacing={1} justifyContent="center" alignItems="center" sx={{ padding: "10px" }}>
-   
-   <StudentSearch />
+      <StudentFilters filters={filters} setFilters={setFilters} />
       <Box sx={{ width: "100%" }}>
         <DataGrid
           loading={Loading}
           rows={rows}
           columns={columns}
           autoHeight
-          rowHeight={300}
+          rowHeight={180}
           pageSize={filters.entriesPerPage}
           hideFooter
           disableColumnMenu
@@ -388,7 +358,6 @@ console.log(params)
           headerHeight={48}
         />
       </Box>
-     
       <Stack direction="row" spacing={2} alignItems="center">
         <IconButton size="small">
           {Loading ? (
@@ -406,7 +375,18 @@ console.log(params)
           variant="outlined"
         />
       </Stack>
+      <Button
+        startIcon={<DownloadIcon />}
+        variant="outlined"
+        color="primary"
+        size="small"
+        sx={{ textTransform: "none" }}
+        onClick={() => downloadAsExcel(studentList, desiredFields)}
+        style={{ "margin-left": "40px" }}
+      >
+        Download
+      </Button>
     </Stack>
   );
-}
-export default StudentList
+};
+export default StudentPlaced;
