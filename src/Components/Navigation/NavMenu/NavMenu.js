@@ -139,11 +139,11 @@ const NavMenu = () => {
           },
         }}
       >
-        {user && user?.roles.includes("STUDENT")&&!(user?.roles.includes("TPO")) && (
+        {user && (user?.roles.includes("STUDENT")||user?.roles.includes("PLACEMENT_TEAM"))&&!(user?.roles.includes("TPO")) && (
           <Item Icon={<PersonIcon fontSize="small" />} text="Profile" url="/profile" />
         )}
-        {user && user?.roles.includes("STUDENT") && (
-          <Item Icon={<HelpIcon fontSize="small" />} text="Contact" url="/contact" />
+        {user && (user?.roles.includes("STUDENT") ||user?.roles.includes("PLACEMENT_TEAM"))&& (
+          <Item Icon={<HelpIcon fontSize="small"/>}  text="Contact" url="/contact" />
         )}
         {user && <Divider />}
         {user && user?.roles.includes("PLACEMENT_TEAM") && !user.roles.includes("STUDENT") && (
@@ -153,7 +153,7 @@ const NavMenu = () => {
             url="/register"
           />
         )}
-        {user && user?.roles.includes("PLACEMENT_TEAM") && (
+        {user && (user?.roles.includes("PLACEMENT_TEAM")||user?.roles.includes("TPO")) && (
           <Item Icon={<TeamIcon fontSize="small" />} text="Team Workspace" url="/team" />
         )}
         {user && user?.roles.includes("TPO") && (

@@ -101,7 +101,7 @@ const StudentList=()=>{
       passingYear: currentYear() + 1,
       courseId: "",
       aggregateCGPASemester: 2,
-      dreamLPA: 9,
+      dreamLPA: 0,
       courseId:"636165923f57d2adcc75938d"
     });
     const deleteEmptyParams = (filters) => {
