@@ -28,13 +28,13 @@ const StudentSearch = () => {
         placeholder="Student Name..."
         value={search}
         onChange={(e) => {
-          if (e.target.value === "") navigate(`/tpo/EditTeam`);
+          if (e.target.value === "") navigate(`/tpo/edit`);
           setSearch(e.target.value);
         }}
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            navigate(`/tpo/EditTeam/${search}`);
+            navigate(`/tpo/edit/${search}`);
           }
         }}
       />
@@ -42,7 +42,7 @@ const StudentSearch = () => {
         size="small"
         sx={{ textTransform: "none" }}
         onClick={(e) => {
-          navigate(`/tpo/EditTeam/${search}`);
+          navigate(`/tpo/edit/${search}`);
         }}
         variant="outlined"
       >
