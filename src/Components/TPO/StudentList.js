@@ -123,7 +123,7 @@ const getStudentList = (filters) => {
       filters = { ...filters, searchQuery: params.value };
   
     axios
-      .get("/getstudentList", { params: deleteEmptyParams(filters) })
+      .get("/getstudentListForTpo", { params: deleteEmptyParams(filters) })
       .then((res) => {
         console.log(res.data);
         setStudentList(res.data.data);
@@ -137,7 +137,7 @@ const getStudentList = (filters) => {
   };
   useEffect(() => {
     getStudentList(filters);
-  }, [params.value, listChanged]);
+  }, [params.value]);
 
  
 
@@ -233,26 +233,7 @@ const getStudentList = (filters) => {
         return <ColTxt txt={res} />;
       },
     },
-    {
-      field: "cgpa",
-      headerName: "CGPA (till now)",
-      width: 200,
-      sortable: false,
-      renderCell: (val) => {
-        const res = val.value[0];
-        return (
-          <Stack spacing={1} sx={{ width: "100%" }}>
-            <Stack>
-              <ColTxt txt="Aggregate CGPA" />
-              <CopyableText text={Math.round(res.aggregateCGPA * 100) / 100} fontSize="12px" />
-            </Stack>
-            <Stack>
-              <ColTxt txt={"Aggregate CGPA Till Semester" + " - " + res.aggregateCGPASemester} />
-            </Stack>
-          </Stack>
-        );
-      },
-    },
+   
     {
       field: "contact",
       headerName: "Contact",
@@ -352,12 +333,7 @@ const getStudentList = (filters) => {
       email: [{ collegeEmail: student.collegeEmail, personalEmail: student.personalEmail }],
       course: student.courseName,
       department: student.departmentName,
-      cgpa: [
-        {
-          aggregateCGPA: student.aggregateCGPA,
-          aggregateCGPASemester: student.aggregateCGPASemester,
-        },
-      ],
+     
       contact: [{ phoneNo: student.phoneNo, altPhoneNo: student.altPhoneNo }],
       teamstatus:[{designation:student.designation,userId:student._id}]
     };
