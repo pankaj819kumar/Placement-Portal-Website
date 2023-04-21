@@ -9,7 +9,7 @@ import axios from "../../axios";
 // MUI Components
 import { Box, Stack, Typography, Avatar, Button } from "@mui/material";
 import { Pagination, IconButton, CircularProgress } from "@mui/material";
-import { Select, MenuItem } from '@mui/material';
+import { Select, MenuItem } from "@mui/material";
 // MUI-X Components
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -20,112 +20,101 @@ import UpdateIcon from "@mui/icons-material/Replay";
 import CopyableText from "../assets/MicroComponents/copyText";
 import StudentSearch from "./StudentSearch";
 const generateViewURL = (url) => {
-    const prefix = "https://drive.google.com/file/d/";
-    const documentId = url.replace(prefix, "").split("/")[0];
-    return "https://drive.google.com/uc?export=view&id=" + documentId;
-  };
+  const prefix = "https://drive.google.com/file/d/";
+  const documentId = url.replace(prefix, "").split("/")[0];
+  return "https://drive.google.com/uc?export=view&id=" + documentId;
+};
 // Components
 const ColTxt = ({ txt }) => {
   return (
-    <Typography
-      sx={{ fontSize: "11px", fontFamily: "Nunito", lineHeight: "none" }}
-      align="justify"
-    >
+    <Typography sx={{ fontSize: "11px", fontFamily: "Nunito", lineHeight: "none" }} align="justify">
       <strong>{txt}</strong>
     </Typography>
   );
 };
 const currentYear = () => {
-   
-    const date = new Date();
-    return date.getFullYear();
-  };
-  const options = [
-    { value: 'STUDENT', label: 'STUDENT' },
-    { value: 'MTECH CO-ORDINATOR', label: 'MTECH CO-ORDINATOR' },
-    { value: 'BTECH CO-ORDINATOR', label:'BTECH CO-ORDINATOR'},
-    { value: 'OVERALL CO-ORDINATOR', label:'OVERALL CO-ORDINATOR'},
-  { value: ' PLACEMENT EXECUTIVE', label:'PLACEMENT EXECUTIVE'},
-  
-  ];
- 
-  const CustomCellRenderer = ({ value,userId, onEditCellChange }) => {
-    const [selectedOption, setSelectedOption] = useState(value);
-  
-    const handleChange = (event) => {
-      const newValue = event.target.value;
-      console.log(value,userId);
-      axios
-      .post("/updateTeamMember", { "userId": userId,"designation":event.target.value  })
+  const date = new Date();
+  return date.getFullYear();
+};
+const options = [
+  { value: "STUDENT", label: "STUDENT" },
+  { value: "MTECH CO-ORDINATOR", label: "MTECH CO-ORDINATOR" },
+  { value: "BTECH CO-ORDINATOR", label: "BTECH CO-ORDINATOR" },
+  { value: "OVERALL CO-ORDINATOR", label: "OVERALL CO-ORDINATOR" },
+  { value: " PLACEMENT EXECUTIVE", label: "PLACEMENT EXECUTIVE" },
+];
+
+const CustomCellRenderer = ({ value, userId, onEditCellChange }) => {
+  const [selectedOption, setSelectedOption] = useState(value);
+
+  const handleChange = (event) => {
+    const newValue = event.target.value;
+    console.log(value, userId);
+    axios
+      .post("/updateTeamMember", { userId: userId, designation: event.target.value })
       .then((res) => {
-      console.log("Updated")
+        console.log("Updated");
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
       });
-      setSelectedOption(newValue);
-      onEditCellChange({ value: newValue });
-     
-    };
-  
-    return (
-      <Select value={selectedOption} onChange={handleChange}>
-        {options.map((option) => (
-          
-          <MenuItem key={option.value} value={option.value} >
-             <ColTxt  txt={option.label} />
-          </MenuItem>
-         
-        ))}
-      </Select>
-    );
+    setSelectedOption(newValue);
+    onEditCellChange({ value: newValue });
   };
 
+  return (
+    <Select value={selectedOption} onChange={handleChange}>
+      {options.map((option) => (
+        <MenuItem key={option.value} value={option.value}>
+          <ColTxt txt={option.label} />
+        </MenuItem>
+      ))}
+    </Select>
+  );
+};
 
-const StudentList=()=>{
-  
-    const params = useParams();
-    const navigate = useNavigate();
-    const [search, setSearch] = useState(params.value===null?"":params.value)
-    const [Loading, setLoading] = useState(false);
-    const [studentList, setStudentList] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);
-    const [open, setOpen] = useState(false);
-    const [recruiter, setRecruiter] = useState({});
-    const [opencontact, setOpenContact] = useState(false);
-    const [listChanged, setListChanged] = useState(false);
-   
-    const [filters, setFilters] = useState({
-      page: 1,
-      entriesPerPage: 50,
-      passingYear: currentYear() + 1,
-      courseId: "",
-      aggregateCGPASemester: 2,
-      dreamLPA: 0,
-      courseId:"636165923f57d2adcc75938d"
-    });
-    const deleteEmptyParams = (filters) => {
-     delete filters.departmentId;
+const StudentList = () => {
+  const params = useParams();
+  const navigate = useNavigate();
+  const [search, setSearch] = useState(params.value === null ? "" : params.value);
+  const [Loading, setLoading] = useState(false);
+  const [studentList, setStudentList] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [recruiter, setRecruiter] = useState({});
+  const [opencontact, setOpenContact] = useState(false);
+  const [listChanged, setListChanged] = useState(false);
+
+  const [filters, setFilters] = useState({
+    page: 1,
+    entriesPerPage: 50,
+    passingYear: currentYear() + 1,
+    courseId: "",
+    aggregateCGPASemester: 2,
+    dreamLPA: 0,
+    courseId: "636165923f57d2adcc75938d",
+  });
+  const deleteEmptyParams = (filters) => {
+    delete filters.departmentId;
     delete filters.minCGPA;
-     delete filters.dreamLPA;
-       delete filters.gender;
-       delete filters.isParticipatingInPlacements;
-       delete filters.aggregateCGPASemester;
-       
-        return filters;
-      };
+    delete filters.dreamLPA;
+    delete filters.gender;
+    delete filters.isParticipatingInPlacements;
+    delete filters.aggregateCGPASemester;
 
-//getStudents
-const getStudentList = (filters) => {
-  console.log(deleteEmptyParams(filters)); 
-  setLoading(true);
-    if (!(params.value=== null))
-      filters = { ...filters, searchQuery: params.value };
-  
+    return filters;
+  };
+
+  //getStudents
+  const getStudentList = (filters) => {
+    // console.log(deleteEmptyParams(filters));
+    setLoading(true);
+    if (!(params.value === null)) filters = { ...filters, searchQuery: params.value };
+
     axios
       .get("/getstudentListForTpo", { params: deleteEmptyParams(filters) })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setStudentList(res.data.data);
         setTotalPages(res.data.pageCount);
         setLoading(false);
@@ -133,13 +122,10 @@ const getStudentList = (filters) => {
       .catch((err) => {
         setLoading(false);
       });
-      console.log("yes",deleteEmptyParams(filters));
   };
   useEffect(() => {
     getStudentList(filters);
   }, [params.value]);
-
- 
 
   const columns = [
     {
@@ -233,7 +219,7 @@ const getStudentList = (filters) => {
         return <ColTxt txt={res} />;
       },
     },
-   
+
     {
       field: "contact",
       headerName: "Contact",
@@ -256,7 +242,6 @@ const getStudentList = (filters) => {
       },
     },
 
-
     {
       field: "teamstatus",
       headerName: "Manage Team Status",
@@ -264,11 +249,9 @@ const getStudentList = (filters) => {
       editable: true,
       renderCell: (params) => (
         <CustomCellRenderer
-        userId={params.value[0].userId}
+          userId={params.value[0].userId}
           value={params.value[0].designation}
-          onEditCellChange={(newValue) =>
-            params.api.commitCellChange({ ...params, ...newValue })
-          }
+          onEditCellChange={(newValue) => params.api.commitCellChange({ ...params, ...newValue })}
         />
       ),
     },
@@ -333,21 +316,20 @@ const getStudentList = (filters) => {
       email: [{ collegeEmail: student.collegeEmail, personalEmail: student.personalEmail }],
       course: student.courseName,
       department: student.departmentName,
-     
+
       contact: [{ phoneNo: student.phoneNo, altPhoneNo: student.altPhoneNo }],
-      teamstatus:[{designation:student.designation,userId:student._id}]
+      teamstatus: [{ designation: student.designation, userId: student._id }],
     };
   });
 
   const handleChange = (e, newPage) => {
     setFilters({ ...filters, page: newPage });
   };
-  
-console.log(params)
+
+  // console.log(params)
   return (
     <Stack spacing={1} justifyContent="center" alignItems="center" sx={{ padding: "10px" }}>
-   
-   <StudentSearch />
+      <StudentSearch />
       <Box sx={{ width: "100%" }}>
         <DataGrid
           loading={Loading}
@@ -364,7 +346,7 @@ console.log(params)
           headerHeight={48}
         />
       </Box>
-     
+
       <Stack direction="row" spacing={2} alignItems="center">
         <IconButton size="small">
           {Loading ? (
@@ -384,5 +366,5 @@ console.log(params)
       </Stack>
     </Stack>
   );
-}
-export default StudentList
+};
+export default StudentList;

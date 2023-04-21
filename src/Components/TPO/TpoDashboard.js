@@ -11,6 +11,7 @@ import { Stack, Divider, Typography, Alert } from "@mui/material";
 import TpoNav from "./TpoNav";
 import EditTeam from "./EditTeam";
 import ViewTeam from "./ViewTeam";
+import Analytics from "./Analytics/Analytics";
 
 const TpoDashboard = () => {
   const params = useParams();
@@ -18,7 +19,7 @@ const TpoDashboard = () => {
   const [user] = useContext(UserContext);
   
   useEffect(() => {
-    if (params.panel === undefined) navigate(`/tpo/edit`);
+    if (params.panel === undefined) navigate(`/tpo/view`);
   }, []);
 
   return <>{user ? (
@@ -27,27 +28,19 @@ const TpoDashboard = () => {
       divider={<Divider flexItem orientation="horizontal" />}
       sx={{ minHeight: "calc(100vh - 64px)", width: "100%", paddingTop: "10px" }}
     >
-      <Typography
-        textAlign="center"
-        variant="h4"
-        color="text.secondary"
-        sx={{ fontFamily: "Nunito" }}
-      >
-        Placement Team
-      </Typography>
       <Stack
         direction="row"
         divider={<Divider flexItem orientation="vertical" />}
         spacing={1}
         sx={{ width: "100%", flexGrow: 1 }}
       >
-        <TpoNav />
+        <TpoNav/>
         {params.panel === "edit" ? (
           <EditTeam />
         ) : params.panel === "view" ? (
           <ViewTeam />
-        // ) : params.panel === "placements" ? (
-        //   <Student />
+        ) : params.panel === "analytics" ? (
+          <Analytics />
         ) : null}
       </Stack>
     </Stack>

@@ -9,7 +9,7 @@ import axios from "../../../axios";
 // MUI Components
 import { Box, Stack, Typography, Avatar, Button } from "@mui/material";
 import { Pagination, IconButton, CircularProgress } from "@mui/material";
-import { Select, MenuItem } from '@mui/material';
+import { Select, MenuItem } from "@mui/material";
 // MUI-X Components
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -20,104 +20,91 @@ import UpdateIcon from "@mui/icons-material/Replay";
 import CopyableText from "../../assets/MicroComponents/copyText";
 import StudentSearch from "./StudentSearch";
 const generateViewURL = (url) => {
-    const prefix = "https://drive.google.com/file/d/";
-    const documentId = url.replace(prefix, "").split("/")[0];
-    return "https://drive.google.com/uc?export=view&id=" + documentId;
-  };
+  const prefix = "https://drive.google.com/file/d/";
+  const documentId = url.replace(prefix, "").split("/")[0];
+  return "https://drive.google.com/uc?export=view&id=" + documentId;
+};
 // Components
 const ColTxt = ({ txt }) => {
   return (
-    <Typography
-      sx={{ fontSize: "11px", fontFamily: "Nunito", lineHeight: "none" }}
-      align="justify"
-    >
+    <Typography sx={{ fontSize: "11px", fontFamily: "Nunito", lineHeight: "none" }} align="justify">
       <strong>{txt}</strong>
     </Typography>
   );
 };
 const currentYear = () => {
-   
-    const date = new Date();
-    return date.getFullYear();
-  };
- 
- 
+  const date = new Date();
+  return date.getFullYear();
+};
 
+const PlacedList = () => {
+  const params = useParams();
+  const navigate = useNavigate();
+  const [search, setSearch] = useState(params.value === null ? "" : params.value);
+  const [Loading, setLoading] = useState(false);
+  const [studentList, setStudentList] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [recruiter, setRecruiter] = useState({});
+  const [opencontact, setOpenContact] = useState(false);
+  const [listChanged, setListChanged] = useState(false);
 
-
-const PlacedList=()=>{
-  
-    const params = useParams();
-    const navigate = useNavigate();
-    const [search, setSearch] = useState(params.value===null?"":params.value)
-    const [Loading, setLoading] = useState(false);
-    const [studentList, setStudentList] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);
-    const [open, setOpen] = useState(false);
-    const [recruiter, setRecruiter] = useState({});
-    const [opencontact, setOpenContact] = useState(false);
-    const [listChanged, setListChanged] = useState(false);
-   
-    const [filters, setFilters] = useState({
-        courseId : "636165923f57d2adcc75938d",
-        entriesPerPage : 50,
-        page:1, 
-        searchQuery : ""
-        //   page: 1,
+  const [filters, setFilters] = useState({
+    courseId: "636165923f57d2adcc75938d",
+    entriesPerPage: 50,
+    page: 1,
+    searchQuery: "",
+    //   page: 1,
     //   entriesPerPage: 50,
     //   passingYear: currentYear() + 1,
     //   courseId: "",
     //   aggregateCGPASemester: 2,
-    
-    });
-    const deleteEmptyParams = (filters) => {
-     delete filters.departmentId;
+  });
+  const deleteEmptyParams = (filters) => {
+    delete filters.departmentId;
     delete filters.minCGPA;
-     delete filters.dreamLPA;
-       delete filters.gender;
-       delete filters.isParticipatingInPlacements;
-       delete filters.aggregateCGPASemester;
-       
-        return filters;
-      };
-  
-//getStudents
+    delete filters.dreamLPA;
+    delete filters.gender;
+    delete filters.isParticipatingInPlacements;
+    delete filters.aggregateCGPASemester;
 
- 
+    return filters;
+  };
 
-  useEffect(()=>{
-  
-    axios.get('/getPlacedList')
-    .then(response => {console.log(response.data)
-      var trows = response.data.map((student) => {
-        return {
-          id: student._id,
-          student: [
-            {
-              name: student.name,
-              id: student._id,
-              photo: student.photo,
-            },
-          ],
-          company: student.company,
-          enrollment: student.enrollmentNo,
-          email: [{ collegeEmail: student.collegeEmail, personalEmail: student.personalEmail }],
-          department: student.departmentName,
-          contact: [{ phoneNo: student.phoneNo, altPhoneNo: student.altPhoneNo }],
-          // teamstatus:[{designation:student.designation,userId:student._id}]
-          maxCTCOffered: student.maxCTCOffered,};
-      });
-      console.log(trows)
-    setRows(trows)
-    })
+  //getStudents
 
-    .catch(error => console.log(error));
-    console.log("yes")
-  }
-  
-  ,[])
+  useEffect(() => {
+    axios
+      .get("/getPlacedList")
+      .then((response) => {
+        // console.log(response.data);
+        var trows = response.data.map((student) => {
+          return {
+            id: student._id,
+            student: [
+              {
+                name: student.name,
+                id: student._id,
+                photo: student.photo,
+              },
+            ],
+            company: student.company,
+            enrollment: student.enrollmentNo,
+            email: [{ collegeEmail: student.collegeEmail, personalEmail: student.personalEmail }],
+            department: student.departmentName,
+            contact: [{ phoneNo: student.phoneNo, altPhoneNo: student.altPhoneNo }],
+            // teamstatus:[{designation:student.designation,userId:student._id}]
+            maxCTCOffered: student.maxCTCOffered,
+          };
+        });
+        // console.log(trows)
+        setRows(trows);
+      })
 
-const [rows,setRows]=useState({});
+      .catch((error) => console.log(error));
+  }, []);
+
+  const [rows, setRows] = useState({});
 
   const columns = [
     {
@@ -165,8 +152,6 @@ const [rows,setRows]=useState({});
       },
     },
 
-    
-   
     {
       field: "contact",
       headerName: "Contact",
@@ -198,24 +183,21 @@ const [rows,setRows]=useState({});
         return <ColTxt txt={res} fontSize="20px" sx={{ textAlign: "center" }} />;
       },
     },
-    
+
     {
       field: "maxCTCOffered",
       headerName: "CTCOffered",
       width: 200,
       renderCell: (params) => {
-      return ( <CopyableText text={`${params.value} LPA`} fontSize="10px" sx={{ width: "100" }}/>)
+        return <CopyableText text={`${params.value} LPA`} fontSize="10px" sx={{ width: "100" }} />;
+      },
     },
-    },
-    
   ];
 
- 
   const handleChange = (e, newPage) => {
     setFilters({ ...filters, page: newPage });
   };
-  
-console.log(params)
+
   return (
     <Stack spacing={1} justifyContent="center" alignItems="center" sx={{ padding: "10px" }}>
       <Box sx={{ width: "100%" }}>
@@ -234,7 +216,7 @@ console.log(params)
           headerHeight={48}
         />
       </Box>
-     
+
       <Stack direction="row" spacing={2} alignItems="center">
         <IconButton size="small">
           {Loading ? (
@@ -254,5 +236,5 @@ console.log(params)
       </Stack>
     </Stack>
   );
-}
-export default PlacedList
+};
+export default PlacedList;

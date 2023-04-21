@@ -75,11 +75,9 @@ const StudentList = () => {
     setLoading(true);
     if (params.value?.split("=")[0] === "search")
       filters = { ...filters, searchQuery: params.value?.split("=")[1] };
-    console.log(deleteEmptyParams(filters));
     axios
       .get("/getstudentList", { params: deleteEmptyParams(filters) })
       .then((res) => {
-        console.log(res.data);
         setStudentList(res.data.data);
         setTotalPages(res.data.pageCount);
         setLoading(false);

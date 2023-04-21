@@ -11,6 +11,7 @@ const Home = () => {
   const [user, setUser] = useContext(UserContext);
   useEffect(() => {
     if (!user) navigate("/Login");
+    if (user.roles.includes("TPO")) navigate("/tpo");
   }, [user]);
 
   return (

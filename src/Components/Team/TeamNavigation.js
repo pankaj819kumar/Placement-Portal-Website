@@ -91,7 +91,7 @@ const TeamNavigation = ({ studentProfile }) => {
           photoURL={profile.photo}
           linkedinURL={profile.linkedin}
           Loaded={true}
-          team={{ designation: "Placement Executive", session: "2022-23" }}
+          team={{ designation: "Placement Executive", session: "2023-24" }}
         />
       ) : (
         <ProfileAvatar
@@ -99,7 +99,7 @@ const TeamNavigation = ({ studentProfile }) => {
           photoURL="/images/userImg.png"
           Loaded={false}
           linkedinURL={profile.linkedin}
-          team={{ designation: "Placement Executive", session: "2022-23" }}
+          team={{ designation: "Placement Executive", session: "2023-24" }}
         />
       )}
 

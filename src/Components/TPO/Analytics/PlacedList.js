@@ -37,7 +37,7 @@ const currentYear = () => {
   return date.getFullYear();
 };
 
-const UnplacedList = () => {
+const PlacedList = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [search, setSearch] = useState(params.value === null ? "" : params.value);
@@ -75,8 +75,9 @@ const UnplacedList = () => {
 
   useEffect(() => {
     axios
-      .get("/getUnplacedList")
+      .get("/getPlacedList")
       .then((response) => {
+        // console.log(response.data);
         var trows = response.data.map((student) => {
           return {
             id: student._id,
@@ -87,13 +88,12 @@ const UnplacedList = () => {
                 photo: student.photo,
               },
             ],
-
+            company: student.company,
             enrollment: student.enrollmentNo,
             email: [{ collegeEmail: student.collegeEmail, personalEmail: student.personalEmail }],
             department: student.departmentName,
             contact: [{ phoneNo: student.phoneNo, altPhoneNo: student.altPhoneNo }],
             // teamstatus:[{designation:student.designation,userId:student._id}]
-            resume: student.resumeLink,
             maxCTCOffered: student.maxCTCOffered,
           };
         });
@@ -110,7 +110,7 @@ const UnplacedList = () => {
     {
       field: "student",
       headerName: "Student",
-      width: 250,
+      width: 300,
       sortable: false,
       renderCell: (val) => {
         const res = val.value[0];
@@ -155,7 +155,7 @@ const UnplacedList = () => {
     {
       field: "contact",
       headerName: "Contact",
-      width: 200,
+      width: 250,
       sortable: false,
       renderCell: (val) => {
         const res = val.value[0];
@@ -173,28 +173,23 @@ const UnplacedList = () => {
         );
       },
     },
-
     {
-      field: "resume",
-      headerName: "Resume",
+      field: "company",
+      headerName: "Company Name",
       sortable: false,
-      width: 100,
+      width: 200,
       renderCell: (val) => {
         const res = val.value;
-        return (
-          <Stack sx={{ whiteSpace: "normal", width: "100%" }} spacing={1}>
-            <Button
-              onClick={() => {
-                window.open(res, "_blank").focus();
-              }}
-              size="small"
-              sx={{ textTransform: "none" }}
-              variant="outlined"
-            >
-              Resume
-            </Button>
-          </Stack>
-        );
+        return <ColTxt txt={res} fontSize="20px" sx={{ textAlign: "center" }} />;
+      },
+    },
+
+    {
+      field: "maxCTCOffered",
+      headerName: "CTCOffered",
+      width: 200,
+      renderCell: (params) => {
+        return <CopyableText text={`${params.value} LPA`} fontSize="10px" sx={{ width: "100" }} />;
       },
     },
   ];
@@ -242,4 +237,4 @@ const UnplacedList = () => {
     </Stack>
   );
 };
-export default UnplacedList;
+export default PlacedList;
